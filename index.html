@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html ng-app="phoneBook">
+    <head>
+        <meta charset="utf-8">
+        <title>Lista Telefônica</title>
+
+        <link rel="stylesheet" href="lib/bootstrap/bootstrap.css">
+        <style>
+            .jumbotron {
+                width: 60%;
+                text-align: center;
+                margin-top: 2%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .table {
+                margin-top: 2%;
+            }
+
+            .selected {
+                background-color: #FF9178;
+            }
+        </style>
+        <script src="lib/angular/angular.js"></script>
+
+        <script>
+            angular.module("phoneBook", []);
+            angular.module("phoneBook").controller("phoneBookController", function ($scope) {
+                $scope.app = "Lista Telefônica";
+                $scope.contacts = [
+                    {name: "Pedro", phoneNumber: "99998888"},
+                    {name: "Mario", phoneNumber: "34443322"},
+                    {name: "Ana", phoneNumber: "88773311"}
+                ];
+                $scope.operators = [
+                    {name: "Oi", code: 14, category: "Celular"},
+                    {name: "Vivo", code: 15, category: "Celular"},
+                    {name: "Tim", code: 41, category: "Celular"},
+                    {name: "GVT", code: 25, category: "Fixo"},
+                    {name: "Embratel", code: 21, category: "Fixo"},
+                ];
+                $scope.addNewContact = function (contact) {
+                    $scope.contacts.push(angular.copy(contact));
+                    delete $scope.contact;
+                };
+                $scope.deleteContacts = function (contacts) {
+                    $scope.contacts = contacts.filter(function (contact) {
+                        if (!contact.selected) return contact;
+                    });
+                };
+                $scope.isContactSelected = function (contacts) {
+                    return contacts.some(function (contact) {
+                        return contact.selected;
+                    });
+                };
+            });
+        </script>
+
+    </head>
+    <body ng-controller="phoneBookController">
+        <div class="jumbotron">
+            <h3>{{app}}</h3>
+            <table class="table">
+                <tr>
+                    <th></th>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>Operadora</th>
+                </tr>
+                <tr ng-class="{selected: contact.selected}" ng-repeat="contact in contacts">
+                    <td><input type="checkbox" ng-model="contact.selected"></td>
+                    <td>{{contact.name}}</td>
+                    <td>{{contact.phoneNumber}}</td>
+                    <td>{{contact.operator.name}}</td>
+                </tr>
+            </table>
+            <hr>
+            <div class="input-group mb-1">
+                <input type="text" class="form-control" placeholder="Nome"
+                        ng-model="contact.name">
+            </div>
+
+            <div class="input-group mb-1">
+                <input type="text" class="form-control" placeholder="Telefone"
+                        ng-model="contact.phoneNumber">
+            </div>
+
+            <div class="input-group mb-1">
+                <select class="custom-select" ng-model="contact.operator" ng-options="operator.name group by operator.category for operator in operators">
+                    <option value="">Selecione a Operadora</option>
+                </select>
+            </div>
+
+            <div class="btn-group" role="group">
+                <button class="btn btn-primary" ng-click="addNewContact(contact)"
+                        ng-disabled="!contact.name || !contact.phoneNumber">
+                    Adicionar Contato
+                </button>
+
+                <button class="btn btn-danger" ng-click="deleteContacts(contacts)"
+                        ng-disabled="!isContactSelected(contacts)">
+                    Apagar Contatos
+                </button>
+            </div>
+        </div>
+    </body>
+</html>
